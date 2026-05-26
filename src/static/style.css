@@ -39,6 +39,40 @@ body {
 }
 .btn-topbar:hover { background: #3a6ce5; }
 
+.topbar-spacer { flex: 1; }
+
+.btn-topbar-lang {
+  background: none;
+  border: 1px solid #e0e0e0;
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 0 10px;
+  height: 34px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.btn-topbar-lang:hover { border-color: #4a7cf6; color: #4a7cf6; background: #f0f4ff; }
+
+.btn-topbar-settings {
+  background: none;
+  border: 1px solid #e0e0e0;
+  color: #666;
+  font-size: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.btn-topbar-settings:hover { border-color: #4a7cf6; color: #4a7cf6; background: #f0f4ff; }
+
 /* ── Project switcher ── */
 .project-switcher {
   position: relative;
@@ -229,9 +263,29 @@ body {
   cursor: default;
 }
 
+/* ── Form actions row ── */
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.btn-clear {
+  padding: 10px 18px;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-clear:hover { border-color: #e55; color: #e55; background: #fff5f5; }
+
 /* ── Generate button ── */
 .btn-generate {
-  margin-top: auto;
+  flex: 1;
   padding: 10px 24px;
   background: #4a7cf6;
   color: #fff;
@@ -492,3 +546,40 @@ body {
   transition: background 0.15s;
 }
 .btn-modal-confirm:hover { background: #3a6ce5; }
+.btn-modal-confirm.btn-sync { background: #2da060; }
+.btn-modal-confirm.btn-sync:hover { background: #228a52; }
+
+/* ── Settings modal ── */
+.modal-wide { width: 480px; }
+
+.settings-section { display: flex; flex-direction: column; gap: 12px; }
+.settings-section-title { font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.settings-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn-settings-action {
+  padding: 6px 14px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-settings-action:hover { border-color: #4a7cf6; color: #4a7cf6; background: #f0f4ff; }
+.btn-settings-action.btn-sync { background: #e8fff2; border-color: #2da060; color: #2da060; }
+.btn-settings-action.btn-sync:hover { background: #d0ffe8; }
+
+.settings-status {
+  font-size: 12px;
+  color: #888;
+  min-height: 18px;
+  white-space: pre-wrap;
+}
+.settings-status.ok    { color: #2da060; }
+.settings-status.error { color: #e55; }
+
+/* ── Sync modal ── */
+.sync-modal-desc { font-size: 14px; color: #555; }

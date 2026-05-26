@@ -50,8 +50,9 @@ let lastPrompt = "";
 function setIdle() {
   promptState = "idle";
   lastPrompt = "";
-  document.getElementById("btn-generate").textContent = "生成 Prompt";
-  document.getElementById("btn-generate").classList.remove("ready");
+  const btn = document.getElementById("btn-generate");
+  btn.textContent = t("btn.generate");
+  btn.classList.remove("ready");
   document.getElementById("prompt-preview-field").style.display = "none";
   document.getElementById("prompt-preview").value = "";
 }
@@ -61,8 +62,9 @@ function setReady(text) {
   lastPrompt = text;
   document.getElementById("prompt-preview").value = text;
   document.getElementById("prompt-preview-field").style.display = "";
-  document.getElementById("btn-generate").textContent = "复制 Prompt";
-  document.getElementById("btn-generate").classList.add("ready");
+  const btn = document.getElementById("btn-generate");
+  btn.textContent = t("btn.copy");
+  btn.classList.add("ready");
 }
 
 function onFormChange() {
@@ -74,13 +76,36 @@ async function onGenerateClick() {
     const text = buildPrompt();
     if (text) setReady(text);
   } else {
-    // "复制 Prompt" clicked → copy + save
     navigator.clipboard.writeText(lastPrompt);
     const ok = await savePrompt();
     const btn = document.getElementById("btn-generate");
-    btn.textContent = ok ? "已保存 ✓" : "保存失败，请选择项目";
-    setTimeout(() => { btn.textContent = "复制 Prompt"; }, 2000);
+    btn.textContent = ok ? t("btn.saved") : t("btn.save_failed");
+    setTimeout(() => { btn.textContent = t("btn.copy"); }, 2000);
   }
+}
+
+// ── Clear form ─────────────────────────────────────────────────────────────
+
+function clearForm() {
+  // Clear text fields
+  document.getElementById("goal").value  = "";
+  document.getElementById("notes").value = "";
+
+  // Clear item lists
+  document.getElementById("inputs-list").innerHTML  = "";
+  document.getElementById("outputs-list").innerHTML = "";
+  document.getElementById("steps-list").innerHTML   = "";
+
+  // Uncheck all file browser checkboxes and remove their list rows
+  for (const [key, info] of checkedFiles.entries()) {
+    info.cb.checked = false;
+    info.cb.className = info.cb.className.replace(/\boutput-check\b/, "");
+    info.rowEl.remove();
+    checkedFiles.delete(key);
+  }
+
+  // Reset prompt state
+  setIdle();
 }
 
 // ── Build prompt text ──────────────────────────────────────────────────────
@@ -141,11 +166,13 @@ const PROJECT_KEY = "promptcopilot_current_project";
 let currentProject = localStorage.getItem(PROJECT_KEY) || null;
 
 function setCurrentProject(name) {
-  currentProject = name;
-  localStorage.setItem(PROJECT_KEY, name);
-  document.getElementById("current-project-name").textContent = name;
   closeProjectDropdown();
-  loadProjectFolders(name);
+  checkAndForceSync(() => {
+    currentProject = name;
+    localStorage.setItem(PROJECT_KEY, name);
+    document.getElementById("current-project-name").textContent = name;
+    loadProjectFolders(name);
+  });
 }
 
 // ── Project dropdown ───────────────────────────────────────────────────────
@@ -166,7 +193,7 @@ async function toggleProjectDropdown() {
   dropdown.innerHTML = "";
 
   if (projects.length === 0) {
-    dropdown.innerHTML = '<div class="dropdown-empty">暂无项目</div>';
+    dropdown.innerHTML = `<div class="dropdown-empty">${t("folder.no_projects")}</div>`;
   } else {
     projects.forEach(name => {
       const item = document.createElement("div");
@@ -212,7 +239,7 @@ async function confirmCreateProject() {
   const name = nameInput.value.trim();
 
   if (!name) {
-    errorEl.textContent = "项目名称不能为空";
+    errorEl.textContent = t("err.EMPTY_NAME");
     nameInput.classList.add("error");
     return;
   }
@@ -225,10 +252,16 @@ async function confirmCreateProject() {
 
   if (res.ok) {
     closeCreateModal();
-    setCurrentProject(name);
+    // setCurrentProject already wraps sync check
+    checkAndForceSync(() => {
+      currentProject = name;
+      localStorage.setItem(PROJECT_KEY, name);
+      document.getElementById("current-project-name").textContent = name;
+      loadProjectFolders(name);
+    });
   } else {
     const data = await res.json();
-    errorEl.textContent = data.error || "创建失败";
+    errorEl.textContent = errMsg(data);
     nameInput.classList.add("error");
   }
 }
@@ -271,7 +304,7 @@ async function confirmAddFolder() {
     renderFolderItem(path);
   } else {
     const data = await res.json();
-    errorEl.textContent = data.error || "添加失败";
+    errorEl.textContent = errMsg(data);
     input.classList.add("error");
   }
 }
@@ -337,7 +370,7 @@ function renderFolderItem(folderPath) {
   // Column header
   const treeHeader = document.createElement("div");
   treeHeader.className = "file-tree-header";
-  treeHeader.innerHTML = "<span>入</span><span>出</span>";
+  treeHeader.innerHTML = `<span>${t("tree.col_in")}</span><span>${t("tree.col_out")}</span>`;
   treeEl.appendChild(treeHeader);
 
   browser.appendChild(treeEl);
@@ -520,4 +553,131 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("current-project-name").textContent = currentProject;
     loadProjectFolders(currentProject);
   }
+
+  // Load git settings
+  loadSettings();
+
+  // Apply saved language
+  applyI18n();
+  if (promptState === "idle") {
+    document.getElementById("btn-generate").textContent = t("btn.generate");
+  }
 });
+
+// ── Language toggle ─────────────────────────────────────────────────────────
+
+function toggleLang() {
+  setLang(currentLang === "zh" ? "en" : "zh");
+  // Update button state
+  if (promptState === "ready") {
+    document.getElementById("btn-generate").textContent = t("btn.copy");
+  } else {
+    document.getElementById("btn-generate").textContent = t("btn.generate");
+  }
+}
+
+// ── Settings modal ─────────────────────────────────────────────────────────
+
+async function loadSettings() {
+  const res = await fetch("/api/settings");
+  if (!res.ok) return;
+  const data = await res.json();
+  document.getElementById("git-repo-input").value = data.git_repo || "";
+}
+
+function openSettingsModal() {
+  document.getElementById("settings-error").textContent = "";
+  setSettingsStatus("", "");
+  document.getElementById("settings-backdrop").classList.add("open");
+  document.getElementById("settings-modal").classList.add("open");
+}
+
+function closeSettingsModal() {
+  document.getElementById("settings-backdrop").classList.remove("open");
+  document.getElementById("settings-modal").classList.remove("open");
+}
+
+function setSettingsStatus(msg, type) {
+  const el = document.getElementById("settings-status");
+  el.textContent = msg;
+  el.className = "settings-status" + (type ? " " + type : "");
+}
+
+async function saveGitRepo() {
+  const repo = document.getElementById("git-repo-input").value.trim();
+  const res = await fetch("/api/settings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ git_repo: repo }),
+  });
+  if (res.ok) setSettingsStatus(t("status.repo_saved"), "ok");
+  else setSettingsStatus(t("err.SAVE_FAILED"), "error");
+}
+
+async function gitInit() {
+  setSettingsStatus(t("status.init_working"), "");
+  const res = await fetch("/api/git/init", { method: "POST" });
+  const data = await res.json();
+  if (res.ok) setSettingsStatus(t("status.init_ok"), "ok");
+  else setSettingsStatus(errMsg(data), "error");
+}
+
+async function gitSync() {
+  setSettingsStatus(t("status.sync_working"), "");
+  const res = await fetch("/api/git/sync", { method: "POST" });
+  const data = await res.json();
+  if (res.ok) setSettingsStatus(t("status.sync_ok"), "ok");
+  else setSettingsStatus(errMsg(data), "error");
+}
+
+// ── Forced sync ────────────────────────────────────────────────────────────
+
+// Track whether sync was done this session
+let sessionSynced = false;
+
+function setSyncStatus(msg, type) {
+  const el = document.getElementById("sync-status");
+  el.textContent = msg;
+  el.className = "settings-status" + (type ? " " + type : "");
+}
+
+async function checkAndForceSync(onComplete) {
+  const res = await fetch("/api/git/status");
+  const data = await res.json();
+
+  if (!data.configured || !data.initialized || sessionSynced) {
+    onComplete();
+    return;
+  }
+
+  // Show forced sync modal
+  setSyncStatus("", "");
+  document.getElementById("sync-backdrop").classList.add("open");
+  document.getElementById("sync-modal").classList.add("open");
+
+  // Store callback for after sync
+  window._syncOnComplete = onComplete;
+}
+
+async function doForcedSync() {
+  const btn = document.getElementById("btn-do-sync");
+  btn.disabled = true;
+  setSyncStatus(t("status.sync_working"), "");
+
+  const res = await fetch("/api/git/sync", { method: "POST" });
+  const data = await res.json();
+
+  btn.disabled = false;
+
+  if (res.ok) {
+    setSyncStatus(t("status.sync_ok"), "ok");
+    sessionSynced = true;
+    setTimeout(() => {
+      document.getElementById("sync-backdrop").classList.remove("open");
+      document.getElementById("sync-modal").classList.remove("open");
+      if (window._syncOnComplete) window._syncOnComplete();
+    }, 800);
+  } else {
+    setSyncStatus(errMsg(data), "error");
+  }
+}

@@ -10,14 +10,17 @@
 
   <!-- ── 顶栏 ── -->
   <div class="topbar">
-    <button class="btn-topbar" onclick="openCreateModal()">＋ 创建项目</button>
+    <button class="btn-topbar" onclick="openCreateModal()" data-i18n="btn.create_project">＋ 创建项目</button>
     <div class="project-switcher" id="project-switcher">
       <button class="btn-project-current" id="btn-project-current" onclick="toggleProjectDropdown()">
-        <span id="current-project-name">未选择项目</span>
+        <span id="current-project-name" data-i18n="btn.no_project">未选择项目</span>
         <span class="dropdown-arrow">▾</span>
       </button>
       <div class="project-dropdown" id="project-dropdown"></div>
     </div>
+    <div class="topbar-spacer"></div>
+    <button class="btn-topbar-lang" id="btn-lang" onclick="toggleLang()" data-i18n="btn.lang">EN</button>
+    <button class="btn-topbar-settings" onclick="openSettingsModal()" data-i18n="btn.settings">⚙</button>
   </div>
 
   <!-- ── 主体 ── -->
@@ -25,100 +28,134 @@
 
     <!-- 左侧：表单 -->
     <div class="panel panel-left">
-      <h2 class="panel-title">Prompt 编辑</h2>
+      <h2 class="panel-title" data-i18n="panel.edit_title">Prompt 编辑</h2>
 
       <div class="field">
-        <label class="field-label">目标</label>
-        <textarea id="goal" class="field-textarea" placeholder="描述这个 prompt 的目标…" rows="3"></textarea>
+        <label class="field-label" data-i18n="label.goal">目标</label>
+        <textarea id="goal" class="field-textarea" data-i18n-ph="ph.goal" placeholder="描述这个 prompt 的目标…" rows="3"></textarea>
       </div>
 
       <div class="field">
-        <label class="field-label">输入</label>
+        <label class="field-label" data-i18n="label.input">输入</label>
         <div id="inputs-list" class="item-list"></div>
-        <button class="btn-add" onclick="addItem('inputs-list', '输入项…')">＋ 添加输入</button>
+        <button class="btn-add" id="btn-add-input" onclick="addItem('inputs-list', t('ph.input_item'))" data-i18n="btn.add_input">＋ 添加输入</button>
       </div>
 
       <div class="field">
-        <label class="field-label">输出</label>
+        <label class="field-label" data-i18n="label.output">输出</label>
         <div id="outputs-list" class="item-list"></div>
-        <button class="btn-add" onclick="addItem('outputs-list', '输出项…')">＋ 添加输出</button>
+        <button class="btn-add" id="btn-add-output" onclick="addItem('outputs-list', t('ph.output_item'))" data-i18n="btn.add_output">＋ 添加输出</button>
       </div>
 
       <div class="field">
-        <label class="field-label">步骤</label>
+        <label class="field-label" data-i18n="label.steps">步骤</label>
         <div id="steps-list" class="item-list"></div>
-        <button class="btn-add" onclick="addItem('steps-list', '步骤描述…')">＋ 添加步骤</button>
+        <button class="btn-add" id="btn-add-step" onclick="addItem('steps-list', t('ph.step_item'))" data-i18n="btn.add_step">＋ 添加步骤</button>
       </div>
 
       <div class="field">
-        <label class="field-label">备注</label>
-        <textarea id="notes" class="field-textarea" placeholder="本次 prompt 的补充说明…" rows="3"></textarea>
+        <label class="field-label" data-i18n="label.notes">备注</label>
+        <textarea id="notes" class="field-textarea" data-i18n-ph="ph.notes" placeholder="本次 prompt 的补充说明…" rows="3"></textarea>
       </div>
 
-      <!-- Prompt 预览区，生成后显示 -->
       <div class="field prompt-preview-field" id="prompt-preview-field" style="display:none">
-        <label class="field-label">生成的 Prompt</label>
+        <label class="field-label" data-i18n="label.prompt_preview">生成的 Prompt</label>
         <textarea id="prompt-preview" class="prompt-preview" readonly rows="8"></textarea>
       </div>
 
-      <button class="btn-generate" id="btn-generate" onclick="onGenerateClick()">生成 Prompt</button>
+      <div class="form-actions">
+        <button class="btn-clear" onclick="clearForm()" data-i18n="btn.clear">清空表单</button>
+        <button class="btn-generate" id="btn-generate" onclick="onGenerateClick()" data-i18n="btn.generate">生成 Prompt</button>
+      </div>
     </div>
 
     <!-- 右侧 -->
     <div class="panel panel-right">
 
-      <!-- 备注常驻内容 -->
       <div class="sticky-notes">
         <div class="sticky-notes-header">
-          <span class="sticky-notes-title">备注常驻内容</span>
-          <span class="sticky-notes-hint">每次生成 prompt 时自动附加</span>
+          <span class="sticky-notes-title" data-i18n="label.sticky_title">备注常驻内容</span>
+          <span class="sticky-notes-hint" data-i18n="label.sticky_hint">每次生成 prompt 时自动附加</span>
         </div>
-        <textarea id="sticky-notes" class="sticky-notes-textarea" placeholder="填写后将始终包含在生成的 prompt 中…" rows="5"></textarea>
+        <textarea id="sticky-notes" class="sticky-notes-textarea" data-i18n-ph="ph.sticky" placeholder="填写后将始终包含在生成的 prompt 中…" rows="5"></textarea>
       </div>
 
-      <!-- 工作文件夹 -->
       <div class="work-folders">
         <div class="work-folders-header">
-          <span class="work-folders-title">工作文件夹</span>
-          <button class="btn-add-folder" onclick="openAddFolderModal()">＋ 添加</button>
+          <span class="work-folders-title" data-i18n="label.folders_title">工作文件夹</span>
+          <button class="btn-add-folder" onclick="openAddFolderModal()" data-i18n="btn.add_folder">＋ 添加</button>
         </div>
         <div id="folder-list"></div>
       </div>
 
     </div>
+  </div>
 
+  <!-- ── 设置 Modal ── -->
+  <div class="modal-backdrop" id="settings-backdrop" onclick="closeSettingsModal()"></div>
+  <div class="modal modal-wide" id="settings-modal">
+    <h3 class="modal-title" data-i18n="modal.settings_title">设置</h3>
+    <div class="settings-section">
+      <div class="settings-section-title" data-i18n="settings.git_section">Git 数据同步</div>
+      <div class="modal-field">
+        <label class="field-label" data-i18n="label.git_repo">远端仓库地址</label>
+        <input type="text" id="git-repo-input" class="modal-input" data-i18n-ph="ph.git_repo" placeholder="https://github.com/user/repo.git" />
+        <span class="modal-error" id="settings-error"></span>
+      </div>
+      <div class="settings-actions">
+        <button class="btn-settings-action" onclick="saveGitRepo()" data-i18n="btn.save_repo">保存地址</button>
+        <button class="btn-settings-action" onclick="gitInit()" data-i18n="btn.git_init">初始化</button>
+        <button class="btn-settings-action btn-sync" onclick="gitSync()" data-i18n="btn.git_sync">同步</button>
+      </div>
+      <div class="settings-status" id="settings-status"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-confirm" onclick="closeSettingsModal()" data-i18n="btn.close">关闭</button>
+    </div>
+  </div>
+
+  <!-- ── 强制同步 Modal ── -->
+  <div class="modal-backdrop" id="sync-backdrop"></div>
+  <div class="modal" id="sync-modal">
+    <h3 class="modal-title" data-i18n="modal.sync_title">需要同步</h3>
+    <p class="sync-modal-desc" data-i18n="modal.sync_desc">已配置 Git 同步，请先完成同步再继续操作。</p>
+    <div class="settings-status" id="sync-status"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-confirm btn-sync" id="btn-do-sync" onclick="doForcedSync()" data-i18n="btn.do_sync">立即同步</button>
+    </div>
   </div>
 
   <!-- ── 添加工作文件夹 Modal ── -->
   <div class="modal-backdrop" id="folder-modal-backdrop" onclick="closeAddFolderModal()"></div>
   <div class="modal" id="add-folder-modal">
-    <h3 class="modal-title">添加工作文件夹</h3>
+    <h3 class="modal-title" data-i18n="modal.folder_title">添加工作文件夹</h3>
     <div class="modal-field">
-      <label class="field-label">绝对路径</label>
-      <input type="text" id="new-folder-path" class="modal-input" placeholder="/Users/xxx/my-project" />
+      <label class="field-label" data-i18n="label.folder_path">绝对路径</label>
+      <input type="text" id="new-folder-path" class="modal-input" data-i18n-ph="ph.folder_path" placeholder="/Users/xxx/my-project" />
       <span class="modal-error" id="folder-modal-error"></span>
     </div>
     <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeAddFolderModal()">取消</button>
-      <button class="btn-modal-confirm" onclick="confirmAddFolder()">添加</button>
+      <button class="btn-modal-cancel" onclick="closeAddFolderModal()" data-i18n="btn.cancel">取消</button>
+      <button class="btn-modal-confirm" onclick="confirmAddFolder()" data-i18n="btn.confirm_add">添加</button>
     </div>
   </div>
 
   <!-- ── 创建项目 Modal ── -->
   <div class="modal-backdrop" id="modal-backdrop" onclick="closeCreateModal()"></div>
   <div class="modal" id="create-modal">
-    <h3 class="modal-title">创建项目</h3>
+    <h3 class="modal-title" data-i18n="modal.create_title">创建项目</h3>
     <div class="modal-field">
-      <label class="field-label">项目名称</label>
-      <input type="text" id="new-project-name" class="modal-input" placeholder="例如：写作助手" />
+      <label class="field-label" data-i18n="label.project_name">项目名称</label>
+      <input type="text" id="new-project-name" class="modal-input" data-i18n-ph="ph.project_name" placeholder="例如：写作助手" />
       <span class="modal-error" id="modal-error"></span>
     </div>
     <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeCreateModal()">取消</button>
-      <button class="btn-modal-confirm" onclick="confirmCreateProject()">创建</button>
+      <button class="btn-modal-cancel" onclick="closeCreateModal()" data-i18n="btn.cancel">取消</button>
+      <button class="btn-modal-confirm" onclick="confirmCreateProject()" data-i18n="btn.confirm_create">创建</button>
     </div>
   </div>
 
+  <script src="/static/i18n.js"></script>
   <script src="/static/app.js"></script>
 </body>
 </html>
