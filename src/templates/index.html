@@ -55,11 +55,19 @@
         <textarea id="notes" class="field-textarea" placeholder="本次 prompt 的补充说明…" rows="3"></textarea>
       </div>
 
-      <button class="btn-generate" onclick="generatePrompt()">生成 Prompt</button>
+      <!-- Prompt 预览区，生成后显示 -->
+      <div class="field prompt-preview-field" id="prompt-preview-field" style="display:none">
+        <label class="field-label">生成的 Prompt</label>
+        <textarea id="prompt-preview" class="prompt-preview" readonly rows="8"></textarea>
+      </div>
+
+      <button class="btn-generate" id="btn-generate" onclick="onGenerateClick()">生成 Prompt</button>
     </div>
 
     <!-- 右侧 -->
     <div class="panel panel-right">
+
+      <!-- 备注常驻内容 -->
       <div class="sticky-notes">
         <div class="sticky-notes-header">
           <span class="sticky-notes-title">备注常驻内容</span>
@@ -67,8 +75,33 @@
         </div>
         <textarea id="sticky-notes" class="sticky-notes-textarea" placeholder="填写后将始终包含在生成的 prompt 中…" rows="5"></textarea>
       </div>
+
+      <!-- 工作文件夹 -->
+      <div class="work-folders">
+        <div class="work-folders-header">
+          <span class="work-folders-title">工作文件夹</span>
+          <button class="btn-add-folder" onclick="openAddFolderModal()">＋ 添加</button>
+        </div>
+        <div id="folder-list"></div>
+      </div>
+
     </div>
 
+  </div>
+
+  <!-- ── 添加工作文件夹 Modal ── -->
+  <div class="modal-backdrop" id="folder-modal-backdrop" onclick="closeAddFolderModal()"></div>
+  <div class="modal" id="add-folder-modal">
+    <h3 class="modal-title">添加工作文件夹</h3>
+    <div class="modal-field">
+      <label class="field-label">绝对路径</label>
+      <input type="text" id="new-folder-path" class="modal-input" placeholder="/Users/xxx/my-project" />
+      <span class="modal-error" id="folder-modal-error"></span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeAddFolderModal()">取消</button>
+      <button class="btn-modal-confirm" onclick="confirmAddFolder()">添加</button>
+    </div>
   </div>
 
   <!-- ── 创建项目 Modal ── -->

@@ -214,6 +214,21 @@ body {
 }
 .btn-add:hover { border-color: #4a7cf6; color: #4a7cf6; background: #f0f4ff; }
 
+/* ── Prompt preview ── */
+.prompt-preview {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #c8d8ff;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: "SF Mono", "Menlo", "Consolas", monospace;
+  line-height: 1.6;
+  color: #333;
+  background: #f5f8ff;
+  resize: vertical;
+  cursor: default;
+}
+
 /* ── Generate button ── */
 .btn-generate {
   margin-top: auto;
@@ -229,6 +244,149 @@ body {
   transition: background 0.15s;
 }
 .btn-generate:hover { background: #3a6ce5; }
+.btn-generate.ready { background: #2da060; }
+.btn-generate.ready:hover { background: #228a52; }
+
+/* ── Work folders ── */
+.work-folders {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.work-folders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.work-folders-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+}
+
+.btn-add-folder {
+  background: none;
+  border: 1px dashed #ccc;
+  color: #888;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.btn-add-folder:hover { border-color: #4a7cf6; color: #4a7cf6; background: #f0f4ff; }
+
+/* ── Folder item ── */
+.folder-item {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.folder-item-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #f9f9f9;
+  cursor: pointer;
+  user-select: none;
+}
+.folder-item-header:hover { background: #f0f4ff; }
+
+.folder-chevron { font-size: 11px; color: #aaa; transition: transform 0.15s; }
+.folder-chevron.open { transform: rotate(90deg); }
+
+.folder-icon { font-size: 14px; }
+
+.folder-path {
+  flex: 1;
+  font-size: 12px;
+  color: #444;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-folder-remove {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.btn-folder-remove:hover { color: #e55; }
+
+/* ── Folder browser ── */
+.folder-browser {
+  display: none;
+  flex-direction: column;
+  border-top: 1px solid #eee;
+}
+.folder-browser.open { display: flex; }
+
+.file-tree {
+  padding: 6px 0;
+  max-height: 280px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.file-tree-header {
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+  padding: 4px 12px 2px;
+  font-size: 11px;
+  color: #aaa;
+  border-bottom: 1px solid #f0f0f0;
+}
+.file-tree-header span { width: 20px; text-align: center; }
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s;
+}
+.tree-node:hover { background: #f5f5f5; }
+
+.tree-node .node-indent  { display: inline-block; flex-shrink: 0; }
+.tree-node .node-chevron { font-size: 10px; color: #aaa; width: 12px; flex-shrink: 0; transition: transform 0.15s; }
+.tree-node .node-chevron.open { transform: rotate(90deg); }
+.tree-node .node-icon    { font-size: 13px; flex-shrink: 0; }
+.tree-node .node-name    { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #333; }
+
+.tree-node .node-checks  { display: flex; gap: 18px; flex-shrink: 0; }
+.tree-node input[type="checkbox"] { margin: 0; cursor: pointer; flex-shrink: 0; }
+.tree-node input[type="checkbox"].cb-input  { accent-color: #4a7cf6; }
+.tree-node input[type="checkbox"].cb-output { accent-color: #2da060; }
+
+.tree-node.is-dir .node-name { font-weight: 500; color: #444; }
+
+/* ── Locked list items (from file browser) ── */
+.item-input[data-locked] {
+  background: #f0f4ff;
+  color: #4a7cf6;
+  cursor: default;
+}
+.item-input[data-locked].output-locked {
+  background: #e8fff2;
+  color: #2da060;
+}
 
 /* ── Sticky notes ── */
 .sticky-notes {
