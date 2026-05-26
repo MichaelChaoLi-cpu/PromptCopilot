@@ -153,6 +153,7 @@ async function savePrompt() {
     body: JSON.stringify(payload),
   });
 
+  if (res.ok) refreshSyncBtn();
   return res.ok;
 }
 
@@ -557,6 +558,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Load git settings
   loadSettings();
 
+  // Sync button state
+  refreshSyncBtn();
+
   // Show current version
   fetch("/api/version").then(r => r.json()).then(d => {
     const el = document.getElementById("topbar-version");
@@ -569,6 +573,47 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btn-generate").textContent = t("btn.generate");
   }
 });
+
+// ── Topbar sync button ─────────────────────────────────────────────────────
+
+async function refreshSyncBtn() {
+  const btn = document.getElementById("btn-topbar-sync");
+  if (!btn) return;
+
+  const res = await fetch("/api/git/data-status");
+  const data = await res.json();
+
+  btn.classList.remove("sync-ready", "sync-dirty");
+
+  if (!data.configured || !data.initialized) {
+    btn.disabled = true;
+  } else if (data.dirty) {
+    btn.disabled = false;
+    btn.classList.add("sync-dirty");
+  } else {
+    btn.disabled = false;
+    btn.classList.add("sync-ready");
+  }
+}
+
+async function topbarSync() {
+  const btn = document.getElementById("btn-topbar-sync");
+  btn.disabled = true;
+  const prevClass = btn.className;
+
+  setSettingsStatus(t("status.sync_working"), "");
+
+  const res = await fetch("/api/git/sync", { method: "POST" });
+  const data = await res.json();
+
+  if (res.ok) {
+    setSettingsStatus(t("status.sync_ok"), "ok");
+  } else {
+    setSettingsStatus(errMsg(data), "error");
+  }
+
+  await refreshSyncBtn();
+}
 
 // ── App update ─────────────────────────────────────────────────────────────
 
@@ -712,6 +757,7 @@ async function doForcedSync() {
   if (res.ok) {
     setSyncStatus(t("status.sync_ok"), "ok");
     sessionSynced = true;
+    refreshSyncBtn();
     setTimeout(() => {
       document.getElementById("sync-backdrop").classList.remove("open");
       document.getElementById("sync-modal").classList.remove("open");

@@ -216,6 +216,20 @@ def git_status():
     return jsonify({"configured": True, "repo": repo, "initialized": is_repo})
 
 
+@app.route("/api/git/data-status", methods=["GET"])
+def git_data_status():
+    cfg = _load_yaml(ETC_CONFIG) if os.path.exists(ETC_CONFIG) else {}
+    if not cfg.get("git_repo", "").strip():
+        return jsonify({"configured": False, "dirty": False})
+
+    data_dir = os.path.abspath(DATA_DIR)
+    if not os.path.isdir(os.path.join(data_dir, ".git")):
+        return jsonify({"configured": True, "initialized": False, "dirty": False})
+
+    _, out = _git(["status", "--porcelain"], data_dir)
+    return jsonify({"configured": True, "initialized": True, "dirty": bool(out.strip())})
+
+
 @app.route("/api/git/init", methods=["POST"])
 def git_init():
     cfg = _load_yaml(ETC_CONFIG) if os.path.exists(ETC_CONFIG) else {}

@@ -62,6 +62,34 @@ body {
 .btn-topbar-update:hover   { border-color: #2da060; color: #2da060; background: #e8fff2; }
 .btn-topbar-update:disabled { opacity: 0.5; cursor: default; }
 
+.btn-topbar-sync {
+  background: none;
+  border: 1px solid #ddd;
+  color: #bbb;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 0 12px;
+  height: 34px;
+  border-radius: 6px;
+  cursor: default;
+  transition: all 0.15s;
+}
+.btn-topbar-sync.sync-ready {
+  border-color: #2da060;
+  color: #2da060;
+  cursor: pointer;
+}
+.btn-topbar-sync.sync-ready:hover { background: #e8fff2; }
+.btn-topbar-sync.sync-dirty {
+  border-color: #e55;
+  color: #fff;
+  background: #e55;
+  cursor: pointer;
+}
+.btn-topbar-sync.sync-dirty:hover { background: #c44; border-color: #c44; }
+.btn-topbar-sync:disabled { opacity: 0.5; cursor: default; }
+
 .btn-topbar-lang {
   background: none;
   border: 1px solid #e0e0e0;
