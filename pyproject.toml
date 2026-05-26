@@ -9,6 +9,7 @@ description = "Prompt standardization tool"
 requires-python = ">=3.12"
 dependencies = [
     "flask",
+    "pyyaml",
 ]
 
 [tool.setuptools.packages.find]

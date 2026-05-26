@@ -2,10 +2,90 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PromptCopilot</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <h1>PromptCopilot</h1>
-  <p>Coming soon.</p>
+
+  <!-- ── 顶栏 ── -->
+  <div class="topbar">
+    <button class="btn-topbar" onclick="openCreateModal()">＋ 创建项目</button>
+    <div class="project-switcher" id="project-switcher">
+      <button class="btn-project-current" id="btn-project-current" onclick="toggleProjectDropdown()">
+        <span id="current-project-name">未选择项目</span>
+        <span class="dropdown-arrow">▾</span>
+      </button>
+      <div class="project-dropdown" id="project-dropdown"></div>
+    </div>
+  </div>
+
+  <!-- ── 主体 ── -->
+  <div class="layout">
+
+    <!-- 左侧：表单 -->
+    <div class="panel panel-left">
+      <h2 class="panel-title">Prompt 编辑</h2>
+
+      <div class="field">
+        <label class="field-label">目标</label>
+        <textarea id="goal" class="field-textarea" placeholder="描述这个 prompt 的目标…" rows="3"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="field-label">输入</label>
+        <div id="inputs-list" class="item-list"></div>
+        <button class="btn-add" onclick="addItem('inputs-list', '输入项…')">＋ 添加输入</button>
+      </div>
+
+      <div class="field">
+        <label class="field-label">输出</label>
+        <div id="outputs-list" class="item-list"></div>
+        <button class="btn-add" onclick="addItem('outputs-list', '输出项…')">＋ 添加输出</button>
+      </div>
+
+      <div class="field">
+        <label class="field-label">步骤</label>
+        <div id="steps-list" class="item-list"></div>
+        <button class="btn-add" onclick="addItem('steps-list', '步骤描述…')">＋ 添加步骤</button>
+      </div>
+
+      <div class="field">
+        <label class="field-label">备注</label>
+        <textarea id="notes" class="field-textarea" placeholder="本次 prompt 的补充说明…" rows="3"></textarea>
+      </div>
+
+      <button class="btn-generate" onclick="generatePrompt()">生成 Prompt</button>
+    </div>
+
+    <!-- 右侧 -->
+    <div class="panel panel-right">
+      <div class="sticky-notes">
+        <div class="sticky-notes-header">
+          <span class="sticky-notes-title">备注常驻内容</span>
+          <span class="sticky-notes-hint">每次生成 prompt 时自动附加</span>
+        </div>
+        <textarea id="sticky-notes" class="sticky-notes-textarea" placeholder="填写后将始终包含在生成的 prompt 中…" rows="5"></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── 创建项目 Modal ── -->
+  <div class="modal-backdrop" id="modal-backdrop" onclick="closeCreateModal()"></div>
+  <div class="modal" id="create-modal">
+    <h3 class="modal-title">创建项目</h3>
+    <div class="modal-field">
+      <label class="field-label">项目名称</label>
+      <input type="text" id="new-project-name" class="modal-input" placeholder="例如：写作助手" />
+      <span class="modal-error" id="modal-error"></span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeCreateModal()">取消</button>
+      <button class="btn-modal-confirm" onclick="confirmCreateProject()">创建</button>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
 </body>
 </html>
