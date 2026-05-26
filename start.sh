@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$REPO_DIR"
+
+PYTHON="$REPO_DIR/.venv/bin/python"
+
+if [ ! -f "$PYTHON" ]; then
+    echo "未检测到虚拟环境，正在初始化..."
+    bash "$REPO_DIR/init.sh"
+    if [[ "$SHELL" == */zsh ]]; then
+        source "$HOME/.zshrc" 2>/dev/null || true
+    else
+        source "$HOME/.bashrc" 2>/dev/null || true
+    fi
+fi
+
+echo "启动 PromptCopilot → http://localhost:5000"
+exec "$PYTHON" "$REPO_DIR/src/app.py"
