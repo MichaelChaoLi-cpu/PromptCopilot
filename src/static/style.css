@@ -41,6 +41,27 @@ body {
 
 .topbar-spacer { flex: 1; }
 
+.topbar-version {
+  font-size: 11px;
+  color: #bbb;
+  letter-spacing: 0.03em;
+}
+
+.btn-topbar-update {
+  background: none;
+  border: 1px solid #e0e0e0;
+  color: #666;
+  font-size: 12px;
+  font-family: inherit;
+  padding: 0 10px;
+  height: 34px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-topbar-update:hover   { border-color: #2da060; color: #2da060; background: #e8fff2; }
+.btn-topbar-update:disabled { opacity: 0.5; cursor: default; }
+
 .btn-topbar-lang {
   background: none;
   border: 1px solid #e0e0e0;

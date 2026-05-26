@@ -557,12 +557,52 @@ document.addEventListener("DOMContentLoaded", () => {
   // Load git settings
   loadSettings();
 
+  // Show current version
+  fetch("/api/version").then(r => r.json()).then(d => {
+    const el = document.getElementById("topbar-version");
+    if (el) el.textContent = `v${d.version}`;
+  });
+
   // Apply saved language
   applyI18n();
   if (promptState === "idle") {
     document.getElementById("btn-generate").textContent = t("btn.generate");
   }
 });
+
+// ── App update ─────────────────────────────────────────────────────────────
+
+async function checkUpdate() {
+  const btn = document.getElementById("btn-update");
+  btn.disabled = true;
+  const orig = btn.textContent;
+  btn.textContent = t("update.checking");
+
+  try {
+    const res = await fetch("/api/update", { method: "POST" });
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(t("update.failed", { msg: errMsg(data) }));
+      return;
+    }
+
+    if (data.updated) {
+      btn.textContent = t("update.updated", {
+        old: data.local_version,
+        new: data.remote_version,
+      });
+      setTimeout(() => location.reload(), 2000);
+    } else {
+      btn.textContent = t("update.up_to_date", { v: data.remote_version });
+      setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+    }
+  } catch (e) {
+    alert(t("update.failed", { msg: e.message }));
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+}
 
 // ── Language toggle ─────────────────────────────────────────────────────────
 

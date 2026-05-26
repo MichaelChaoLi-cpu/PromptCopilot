@@ -89,6 +89,15 @@ const TRANSLATIONS = {
     "err.SAVE_FAILED":       "保存失败",
     "err.CREATE_FAILED":     "创建失败",
     "err.ADD_FAILED":        "添加失败",
+    "err.UPDATE_TIMEOUT":    "更新超时，请检查网络",
+    "err.UPDATE_ERROR":      "更新出错",
+
+    // Update
+    "btn.update":            "检查更新",
+    "update.checking":       "检查中…",
+    "update.up_to_date":     "已是最新 v{v}",
+    "update.updated":        "已更新 v{old} → v{new}，即将刷新…",
+    "update.failed":         "更新失败：{msg}",
   },
 
   en: {
@@ -173,14 +182,25 @@ const TRANSLATIONS = {
     "err.SAVE_FAILED":       "Save failed",
     "err.CREATE_FAILED":     "Create failed",
     "err.ADD_FAILED":        "Add failed",
+    "err.UPDATE_TIMEOUT":    "Update timed out — check your network",
+    "err.UPDATE_ERROR":      "Update error",
+
+    // Update
+    "btn.update":            "Check for Updates",
+    "update.checking":       "Checking…",
+    "update.up_to_date":     "Already latest v{v}",
+    "update.updated":        "Updated v{old} → v{new}, refreshing…",
+    "update.failed":         "Update failed: {msg}",
   },
 };
 
 const LANG_KEY = "promptcopilot_lang";
 let currentLang = localStorage.getItem(LANG_KEY) || "zh";
 
-function t(key) {
-  return (TRANSLATIONS[currentLang] || TRANSLATIONS.zh)[key] || key;
+function t(key, vars) {
+  let s = (TRANSLATIONS[currentLang] || TRANSLATIONS.zh)[key] || key;
+  if (vars) Object.entries(vars).forEach(([k, v]) => { s = s.replaceAll(`{${k}}`, v); });
+  return s;
 }
 
 function errMsg(data) {

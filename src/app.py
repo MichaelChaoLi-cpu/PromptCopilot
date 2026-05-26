@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import yaml
 from datetime import datetime
@@ -8,8 +9,9 @@ app = Flask(__name__)
 
 __version__ = "0.1.0"
 
-DATA_DIR   = os.path.join(os.path.dirname(__file__), "..", "data")
-ETC_CONFIG = os.path.join(os.path.dirname(__file__), "..", "etc", "config.yaml")
+REPO_DIR   = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+DATA_DIR   = os.path.join(REPO_DIR, "data")
+ETC_CONFIG = os.path.join(REPO_DIR, "etc", "config.yaml")
 
 
 def _project_dir(name: str) -> str:
@@ -275,6 +277,53 @@ def git_sync():
         return jsonify(_err("GIT_PUSH_FAILED", out)), 500
 
     return jsonify({"ok": True})
+
+
+# ── App update ────────────────────────────────────────────────────────────────
+
+@app.route("/api/version", methods=["GET"])
+def get_version():
+    return jsonify({"version": __version__})
+
+
+@app.route("/api/update", methods=["POST"])
+def do_update():
+    local_ver = __version__
+
+    try:
+        result = subprocess.run(
+            ["git", "pull", "origin", "main"],
+            cwd=REPO_DIR,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        output = (result.stdout + result.stderr).strip()
+        already_latest = "Already up to date." in output
+        updated = not already_latest and result.returncode == 0
+
+        remote_ver = local_ver
+        try:
+            app_path = os.path.join(REPO_DIR, "src", "app.py")
+            with open(app_path, encoding="utf-8") as f:
+                content = f.read()
+            m = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', content)
+            if m:
+                remote_ver = m.group(1)
+        except Exception:
+            pass
+
+        return jsonify({
+            "success": result.returncode == 0,
+            "updated": updated,
+            "local_version": local_ver,
+            "remote_version": remote_ver,
+            "output": output,
+        })
+    except subprocess.TimeoutExpired:
+        return jsonify(_err("UPDATE_TIMEOUT")), 500
+    except Exception as e:
+        return jsonify({"code": "UPDATE_ERROR", "detail": str(e)}), 500
 
 
 if __name__ == "__main__":
