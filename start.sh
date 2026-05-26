@@ -15,5 +15,5 @@ if [ ! -f "$PYTHON" ]; then
     fi
 fi
 
-echo "启动 PromptCopilot → http://localhost:5000"
+echo "启动 PromptCopilot → http://localhost:2333"
 exec "$PYTHON" "$REPO_DIR/src/app.py"

@@ -1,0 +1,8 @@
+README.md
+pyproject.toml
+promptcopilot.egg-info/PKG-INFO
+promptcopilot.egg-info/SOURCES.txt
+promptcopilot.egg-info/dependency_links.txt
+promptcopilot.egg-info/requires.txt
+promptcopilot.egg-info/top_level.txt
+src/app.py
